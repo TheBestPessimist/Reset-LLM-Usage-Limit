@@ -2,9 +2,13 @@ name: Reset Claude usage window
 
 on:
   schedule:
-    # UTC. GitHub may delay scheduled runs by a few minutes.
-    - cron: '0 0,6,12,18 * * *'
-  workflow_dispatch: # allows manual runs from the Actions tab for debugging
+    # GitHub cron is UTC-only. Romania (Europe/Bucharest) is UTC+2 in winter and
+    # UTC+3 in summer, so we schedule BOTH possible UTC hours for each target
+    # local hour (00/06/12/18 RO) and let the guard step below skip the wrong one.
+    #   winter (UTC+2): 22,04,10,16 UTC
+    #   summer (UTC+3): 21,03,09,15 UTC
+    - cron: '0 3,4,9,10,15,16,21,22 * * *'
+  workflow_dispatch: # manual runs always ping, regardless of time
 
 jobs:
   ping-claude:
@@ -12,7 +16,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Check Romania local time
+        id: rotime
+        run: |
+          hour=$(TZ=Europe/Bucharest date +%H)
+          echo "Bucharest time: $(TZ=Europe/Bucharest date)"
+          case "$hour" in
+            00|06|12|18) echo "run=true"  >> "$GITHUB_OUTPUT" ;;
+            *)           echo "run=false" >> "$GITHUB_OUTPUT" ;;
+          esac
+
       - name: Ping Claude with 'test'
+        if: github.event_name == 'workflow_dispatch' || steps.rotime.outputs.run == 'true'
         env:
           CLAUDE_TOKEN: ${{ secrets.CLAUDE_TOKEN }}
         run: bash reset-usage-window.sh

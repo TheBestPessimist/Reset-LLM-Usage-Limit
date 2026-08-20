@@ -1,8 +1,8 @@
 # Reset Claude usage window
 
 Claude subscriptions have 5-hour usage windows that start on first use. This repo pings Claude
-with a single "test" message at 00:00, 06:00, 12:00 and 18:00 UTC so the window starts *before*
-the workday and resets mid-day instead of mid-work.
+with a single "test" message at 00:00, 06:00, 12:00 and 18:00 **Romania time** (Europe/Bucharest)
+so the window starts *before* the workday and resets mid-day instead of mid-work.
 
 ## Setup
 
@@ -29,5 +29,10 @@ Prints the HTTP status and the raw JSON response; exits non-zero on any non-200.
 
 ## Notes
 
-- Times are UTC (Romania is UTC+2/+3, so runs land at 02:00/08:00/14:00/20:00 or 03:00/... local).
+- GitHub cron is UTC-only and has no timezone option, so the workflow schedules both possible
+  UTC hours (UTC+2 winter / UTC+3 summer) and a guard step checks the actual Europe/Bucharest
+  hour, skipping the ping when it isn't 00/06/12/18 local. DST is handled automatically.
+- Manual runs (workflow_dispatch) always ping, regardless of time.
+- GitHub can delay cron runs by a few minutes; in the rare case a run is delayed past the top of
+  the hour boundary (>1h late), the guard skips it and the next slot catches up.
 - GitHub disables cron workflows on repos with no activity for 60 days — an occasional commit keeps it alive.
