@@ -4,8 +4,11 @@ set -euo pipefail
 
 : "${CLAUDE_TOKEN:?Set CLAUDE_TOKEN to your Claude subscription OAuth token (sk-ant-oat01-...)}"
 
+# --retry-max-time bounds the whole retry timer. Without it, curl obeys the
+# Retry-After header the API sends with a 429 (--retry-delay does not cap that)
+# and can sleep for hours; --max-time only bounds one attempt, not the waits.
 response=$(curl -sS -w '\n%{http_code}' \
-  --retry 3 --retry-delay 5 --connect-timeout 10 --max-time 120 \
+  --retry 3 --retry-delay 5 --retry-max-time 60 --connect-timeout 10 --max-time 120 \
   https://api.anthropic.com/v1/messages \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $CLAUDE_TOKEN" \

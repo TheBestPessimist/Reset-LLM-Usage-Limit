@@ -29,6 +29,7 @@ jobs:
 
       - name: Ping Claude with 'test'
         if: github.event_name == 'workflow_dispatch' || steps.rotime.outputs.run == 'true'
+        timeout-minutes: 5
         env:
           CLAUDE_TOKEN: ${{ secrets.CLAUDE_TOKEN }}
         run: bash reset-usage-window.sh
