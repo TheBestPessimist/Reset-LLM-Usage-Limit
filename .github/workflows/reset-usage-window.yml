@@ -4,10 +4,11 @@ on:
   schedule:
     # GitHub cron is UTC-only. Romania (Europe/Bucharest) is UTC+2 in winter and
     # UTC+3 in summer, so we schedule BOTH possible UTC hours for each target
-    # local hour (00/06/12/18 RO) and let the guard step below skip the wrong one.
-    #   winter (UTC+2): 22,04,10,16 UTC
-    #   summer (UTC+3): 21,03,09,15 UTC
-    - cron: '0 3,4,9,10,15,16,21,22 * * *'
+    # local hour (03/08/13/18 RO — anchored on 08:00 work start, stepping +5h
+    # to match the 5-hour usage windows) and let the guard step skip the wrong one.
+    #   winter (UTC+2): 01,06,11,16 UTC
+    #   summer (UTC+3): 00,05,10,15 UTC
+    - cron: '0 0,1,5,6,10,11,15,16 * * *'
   workflow_dispatch: # manual runs always ping, regardless of time
 
 jobs:
@@ -22,7 +23,7 @@ jobs:
           hour=$(TZ=Europe/Bucharest date +%H)
           echo "Bucharest time: $(TZ=Europe/Bucharest date)"
           case "$hour" in
-            00|06|12|18) echo "run=true"  >> "$GITHUB_OUTPUT" ;;
+            03|08|13|18) echo "run=true"  >> "$GITHUB_OUTPUT" ;;
             *)           echo "run=false" >> "$GITHUB_OUTPUT" ;;
           esac
 

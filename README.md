@@ -1,8 +1,9 @@
 # Reset Claude usage window
 
 Claude subscriptions have 5-hour usage windows that start on first use. This repo pings Claude
-with a single "test" message at 00:00, 06:00, 12:00 and 18:00 **Romania time** (Europe/Bucharest)
-so the window starts *before* the workday and resets mid-day instead of mid-work.
+with a single "test" message at 03:00, 08:00, 13:00 and 18:00 **Romania time** (Europe/Bucharest).
+The schedule is anchored on the 08:00 work start and steps +5h to match the window length, so
+windows always run 08-13 and 13-18: the reset lands at 13:00 (lunch), never mid-work.
 
 ## Setup
 
