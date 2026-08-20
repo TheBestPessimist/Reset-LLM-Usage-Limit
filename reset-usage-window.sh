@@ -4,10 +4,7 @@ set -euo pipefail
 
 : "${CLAUDE_TOKEN:?Set CLAUDE_TOKEN to your Claude subscription OAuth token (sk-ant-oat01-...)}"
 
-response_file="$(mktemp)"
-trap 'rm -f "$response_file"' EXIT
-
-http_code=$(curl -sS -o "$response_file" -w '%{http_code}' \
+response=$(curl -sS -w '\n%{http_code}' \
   --retry 3 --retry-delay 5 --connect-timeout 10 --max-time 120 \
   https://api.anthropic.com/v1/messages \
   -H "Content-Type: application/json" \
@@ -22,8 +19,11 @@ http_code=$(curl -sS -o "$response_file" -w '%{http_code}' \
     "messages": [{"role": "user", "content": "a"}]
   }')
 
+# last line is the status code curl appended via -w; everything before it is the response body
+http_code=$(tail -n1 <<< "$response")
+body=$(sed '$d' <<< "$response")
+
+echo "$body"
 echo "HTTP $http_code"
-cat "$response_file"
-echo
 
 [ "$http_code" = "200" ]
