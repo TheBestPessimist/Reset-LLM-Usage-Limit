@@ -1,0 +1,18 @@
+name: Reset Claude usage window
+
+on:
+  schedule:
+    # UTC. GitHub may delay scheduled runs by a few minutes.
+    - cron: '0 0,6,12,18 * * *'
+  workflow_dispatch: # allows manual runs from the Actions tab for debugging
+
+jobs:
+  ping-claude:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ping Claude with 'test'
+        env:
+          CLAUDE_TOKEN: ${{ secrets.CLAUDE_TOKEN }}
+        run: bash reset-usage-window.sh
