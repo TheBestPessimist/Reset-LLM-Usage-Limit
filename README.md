@@ -32,7 +32,7 @@ Prints the HTTP status and the raw JSON response; exits non-zero on any non-200.
 
 - GitHub cron is UTC-only and has no timezone option, so the workflow schedules both possible
   UTC hours (UTC+2 winter / UTC+3 summer) and a guard step checks the actual Europe/Bucharest
-  hour, skipping the ping when it isn't 00/06/12/18 local. DST is handled automatically.
+  hour, skipping the ping when it isn't 03/08/13/18 local. DST is handled automatically.
 - Manual runs (workflow_dispatch) always ping, regardless of time.
 - GitHub can delay cron runs by a few minutes; in the rare case a run is delayed past the top of
   the hour boundary (>1h late), the guard skips it and the next slot catches up.
