@@ -14,7 +14,8 @@ trap 'rm -f "$response_file"' EXIT
 # Subscription auth = OAuth bearer token + the oauth beta header
 # (an API key would instead go on "x-api-key:" and bill per-token, NOT touch the subscription window).
 # The "system" line mimics Claude Code's identity, which subscription tokens expect.
-# No "thinking" field: thinking is opt-in on Haiku and max_tokens=1 caps output anyway.
+# Thinking is explicitly disabled: redundant on Haiku (opt-in there), but keeps thinking off
+# if the model is ever swapped for a newer one where thinking is on by default.
 # --retry covers transient failures (timeouts, 429, 5xx) so a blip doesn't skip the window start.
 http_code=$(curl -sS -o "$response_file" -w '%{http_code}' \
   --retry 3 --retry-delay 5 --connect-timeout 10 --max-time 120 \
@@ -26,6 +27,7 @@ http_code=$(curl -sS -o "$response_file" -w '%{http_code}' \
   -d '{
     "model": "claude-haiku-4-5",
     "max_tokens": 1,
+    "thinking": {"type": "disabled"},
     "system": "You are Claude Code, Anthropic'\''s official CLI for Claude.",
     "messages": [{"role": "user", "content": "test"}]
   }')
