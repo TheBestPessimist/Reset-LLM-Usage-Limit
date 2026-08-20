@@ -17,7 +17,7 @@ response=$(curl -sS -w '\n%{http_code}' \
     "thinking": {"type": "disabled"},
     "system": "a",
     "messages": [{"role": "user", "content": "a"}]
-  }')
+  }') || { echo "curl failed (exit $?): could not reach the Anthropic API (DNS/connection/timeout after retries)"; exit 1; }
 
 # last line is the status code curl appended via -w; everything before it is the response body
 http_code=$(tail -n1 <<< "$response")
