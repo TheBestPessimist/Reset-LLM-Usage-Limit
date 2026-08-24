@@ -3,7 +3,7 @@
 Sends a dummy message to the cheapest Claude model (Haiku) using a subscription OAuth token (not API token), so the 5-hour usage window starts ticking.
 Thinking is explicitly disabled.
 
-This repo pings Claude with a single dummy message at 03:00, 08:00, 13:00 and 18:00 **Romania time** (Europe/Bucharest).
+This repo pings Claude with a single dummy message at 08:00, 13:00 and 18:00 **Romania time** (Europe/Bucharest).
 The schedule is created to work with my 08-16 schedule.
 
 ## Setup
@@ -28,5 +28,5 @@ Prints the HTTP status and the raw JSON response; exits non-zero on any non-200.
 
 ## Notes
 
-- GitHub cron is UTC-only and has no timezone option, so the workflow schedules both possible UTC hours (UTC+2 winter / UTC+3 summer) and a guard step checks the actual Europe/Bucharest hour, skipping the ping when it isn't 03/08/13/18 local. DST is handled automatically.
+- GitHub cron is UTC-only and has no timezone option, so the workflow schedules both possible UTC hours (UTC+2 winter / UTC+3 summer) and a guard step checks the actual Europe/Bucharest hour, skipping the ping when it isn't 08/13/18 local. DST is handled automatically.
 - Manual runs always ping, regardless of time.
